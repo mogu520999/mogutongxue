@@ -1,0 +1,12 @@
+{
+  "shortcuts": [
+    {
+      "id": "1",
+      "keys": "ctrl+alt+Right",
+      "key_code": "17+18+39",
+      "function": "切歌或下一首",
+      "description": "切换到下一首歌曲",
+      "enabled": true
+    }
+  ]
+}

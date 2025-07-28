@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>ai.xuexi</groupId>
+    <artifactId>kjjmcp-api</artifactId>
+    <version>1.0-SNAPSHOT</version>
+
+    <properties>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <spring.boot.version>3.5.4</spring.boot.version>
+
+        <spring-ai.version>1.0.0</spring-ai.version>
+        <spring-ai-alibaba.version>1.0.0.2</spring-ai-alibaba.version>
+
+        <!-- Node.js 和 npm 版本控制 -->
+        <node.version>v20.12.2</node.version>
+        <npm.version>10.9.2</npm.version>
+
+        <!-- 是否跳过前端资源构建，默认 true -->
+        <npm.build.skip>true</npm.build.skip>
+
+        <!-- 第三方库版本 -->
+        <zipkin.version>3.4.3</zipkin.version>
+        <micrometr.version>1.5.0-M2</micrometr.version>
+        <jackson.version>2.15.0</jackson.version>
+        <hibernate.version>6.6.9.Final</hibernate.version>
+        <sqlite-jdbc.version>3.49.1.0</sqlite-jdbc.version>
+        <knife4j.version>4.6.0</knife4j.version>
+        <javacv-platform.version>1.5.9</javacv-platform.version>
+    </properties>
+
+    <dependencies>
+
+
+        <!-- Spring Boot Starters -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter</artifactId>
+            <version>${spring.boot.version}</version>
+            <exclusions>
+                <!-- 排除默认的logback日志框架 -->
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-logging</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+
+        <!-- 使用Log4j2作为日志框架 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-log4j2</artifactId>
+            <version>${spring.boot.version}</version>
+        </dependency>
+
+        <!-- Spring AI -->
+        <dependency>
+            <groupId>org.springframework.ai</groupId>
+            <artifactId>spring-ai-starter-mcp-server-webflux</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.alibaba.fastjson2</groupId>
+            <artifactId>fastjson2</artifactId>
+            <version>2.0.9</version>
+        </dependency>
+
+
+        <!-- 测试依赖 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <version>${spring.boot.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-all</artifactId>
+            <version>5.8.24</version>
+        </dependency>
+    </dependencies>
+
+
+
+
+    <!-- 依赖管理：集中控制版本号 -->
+    <dependencyManagement>
+        <dependencies>
+
+
+            <!--
+                Spring Boot 官方依赖管理清单（BOM）
+
+                是什么：Spring Boot 提供的标准化依赖版本控制文件。
+                干什么的：统一管理 Spring Boot 所有 starter 的版本号，确保不同模块之间的依赖一致性。
+                怎么用：在 dependencies 中引用任何 Spring Boot 组件时无需指定版本号，自动继承此处定义的版本。
+                示例用途：
+                    <dependency>
+                        <groupId>org.springframework.boot</groupId>
+                        <artifactId>spring-boot-starter-web</artifactId>
+                    </dependency>
+             -->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${spring.boot.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+
+            <!--
+                Spring AI Alibaba 依赖管理清单（BOM）
+
+                是什么：阿里巴巴基于 Spring AI 扩展的组件集合，包含 DashScope、AnalyticDB 向量数据库等适配器。
+                干什么的：集中管理 spring-ai-alibaba 相关模块的版本，例如 dashscope、memory、store-analyticdb 等 starter。
+                怎么用：在 dependencies 中引入任意 Spring AI Alibaba 模块时，无需指定版本号，自动继承此处定义的版本。
+                示例用途：
+                    <dependency>
+                        <groupId>com.alibaba.cloud.ai</groupId>
+                        <artifactId>spring-ai-alibaba-starter-dashscope</artifactId>
+                    </dependency>
+             -->
+            <dependency>
+                <groupId>com.alibaba.cloud.ai</groupId>
+                <artifactId>spring-ai-alibaba-bom</artifactId>
+                <version>${spring-ai-alibaba.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+
+            <!--
+                Spring AI 标准依赖管理清单（BOM）
+
+                是什么：Spring AI 提供的基础库版本清单，包括通用 AI 抽象层、文档解析器、向量存储等模块。
+                干什么的：用于统一管理 Spring AI 相关组件的版本，如 tika-document-reader、markdown-document-reader、vector-store 等。
+                怎么用：在 dependencies 中引用任何 Spring AI 模块时无需指定版本号，自动继承此处定义的版本。
+                示例用途：
+                    <dependency>
+                        <groupId>org.springframework.ai</groupId>
+                        <artifactId>spring-ai-markdown-document-reader</artifactId>
+                    </dependency>
+             -->
+            <dependency>
+                <groupId>org.springframework.ai</groupId>
+                <artifactId>spring-ai-bom</artifactId>
+                <version>${spring-ai.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+
+        </dependencies>
+    </dependencyManagement>
+
+    <repositories>
+        <repository>
+            <id>spring-milestones</id>
+            <name>Spring Milestones</name>
+            <url>https://repo.spring.io/milestone</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+
+        <repository>
+            <id>spring-snapshots</id>
+            <name>Spring Snapshots</name>
+            <url>https://repo.spring.io/snapshot</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+        </repository>
+
+        <repository>
+            <id>sonatype</id>
+            <name>OSS Sonatype</name>
+            <url>https://oss.sonatype.org/content/groups/public/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+
+        <repository>
+            <id>aliyunmaven</id>
+            <name>aliyun</name>
+            <url>https://maven.aliyun.com/repository/public</url>
+        </repository>
+    </repositories>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>${spring.boot.version}</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>
